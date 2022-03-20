@@ -27,7 +27,8 @@
   const optArticleSelector = '.post',
     optTitleSelector = '.post-title',
     optTitleListSelector = '.titles',
-    optArticleTagsSelector = '.post-tags .list';
+    optArticleTagsSelector = '.post-tags .list',
+    optArticleAuthorSelector = '.post-author';
 
   function generateTitleLinks(customSelector = '') {
 
@@ -86,7 +87,7 @@
 
   generateTags();
 
-  function tagClickHandler(event) {
+  const tagClickHandler = function (event) {
     /* prevent default action for this event */
     event.preventDefault();
     /* make new constant named "clickedElement" and give it the value of "this" */
@@ -109,11 +110,11 @@
     for (let targetTag of targetTags) {
       /* add class active */
       targetTag.classList.add('active');
-    /* END LOOP: for each found tag link */
+      /* END LOOP: for each found tag link */
     }
     /* execute function "generateTitleLinks" with article selector as argument */
     generateTitleLinks('[data-tags~="' + tag + '"]');
-  }
+  };
 
   function addClickListenersToTags(){
   /* find all links to tags */
@@ -127,5 +128,33 @@
   }
 
   addClickListenersToTags();
+
+  function generateAuthors() {
+    const articles = document.querySelectorAll(optArticleSelector);
+    for (let article of articles) {
+      let articleAuthors = article.querySelector(optArticleAuthorSelector);
+      const author = article.getAttribute('data-author');
+      articleAuthors.innerHTML = '<a href="#author-' + author + '">by ' + author + '</a>';
+    }
+  }
+
+  generateAuthors();
+
+  const authorClickHandler = function (event) {
+    event.preventDefault();
+    const clickedElement = this;
+    const href = clickedElement.getAttribute('href');
+    const author = href.replace('#author-', '');
+    generateTitleLinks('[data-author="' + author + '"]');
+  };
+
+  function addClickListenersToAuthors() {
+    const authorLinks = document.querySelectorAll('a[href^="#author-"]');
+    for (let authorLink of authorLinks) {
+      authorLink.addEventListener('click', authorClickHandler);
+    }
+  }
+
+  addClickListenersToAuthors();
 
 }
